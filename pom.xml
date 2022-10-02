@@ -17,5 +17,6 @@
         <module>petchill-ware</module>
         <module>renren-fast</module>
         <module>renren-generator</module>
+        <module>petchill-gateway</module>
     </modules>
 </project>

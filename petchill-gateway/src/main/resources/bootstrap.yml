@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: petchill-gateway
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+        namespace: 9663d7d5-a554-4c43-8ec1-5dd8f1b00384
