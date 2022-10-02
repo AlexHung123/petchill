@@ -10,5 +10,12 @@
     <packaging>pom</packaging>
     <modules>
         <module>petchill-product</module>
+        <module>petchill-common</module>
+        <module>petchill-coupon</module>
+        <module>petchill-member</module>
+        <module>petchill-order</module>
+        <module>petchill-ware</module>
+        <module>renren-fast</module>
+        <module>renren-generator</module>
     </modules>
 </project>
