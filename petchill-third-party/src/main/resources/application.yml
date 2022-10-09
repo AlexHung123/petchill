@@ -1,0 +1,16 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+  application:
+    name: petchill-third-party
+server:
+  port: 30000
+qiniu:
+  AccessKey: IPvCzxr12b49oxzJtucZ54-jfqthxm6jPzA8mjkm
+  SecretKey: U4cuuqoR-DSZBF21_ZkTUV-PThmoXVnzzm36ZvTo
+  # 七牛云空间名
+  Bucket: petchill
+
+
