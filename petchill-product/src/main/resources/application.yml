@@ -10,6 +10,8 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
   application:
     name: petchill-product
 mybatis-plus:
@@ -19,3 +21,6 @@ mybatis-plus:
       id-type: auto
       logic-delete-value: 1
       logic-not-delete-value: 0
+logging:
+  level:
+    com.alexhong.petchill: debug

@@ -2,6 +2,7 @@ package com.alexhong.petchill.product;
 
 import com.alexhong.petchill.product.entity.BrandEntity;
 import com.alexhong.petchill.product.service.BrandService;
+import com.alexhong.petchill.product.service.CategoryService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.gson.Gson;
 import com.qiniu.common.QiniuException;
@@ -12,18 +13,24 @@ import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.util.Auth;
 import com.qiniu.util.IOUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @SpringBootTest
 class PetchillProductApplicationTests {
 
     @Autowired
     BrandService brandService;
+    
+    @Autowired
+    CategoryService categoryService;
 
     @Test
     void contextLoads() {
@@ -80,6 +87,12 @@ class PetchillProductApplicationTests {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void test1(){
+        Long[] catelogPath = categoryService.findCatelogPath(225L);
+        log.info("Full path: {}", Arrays.asList(catelogPath));
     }
 
 }
