@@ -1,8 +1,11 @@
 package com.alexhong.petchill.product.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
+import com.alexhong.petchill.product.entity.ProductAttrValueEntity;
+import com.alexhong.petchill.product.service.ProductAttrValueService;
 import com.alexhong.petchill.product.vo.AttrGroupRelationVo;
 import com.alexhong.petchill.product.vo.AttrRespVo;
 import com.alexhong.petchill.product.vo.AttrVo;
@@ -28,6 +31,19 @@ import com.alexhong.common.utils.R;
 public class AttrController {
     @Autowired
     private AttrService attrService;
+
+    @Autowired
+    private ProductAttrValueService productAttrValueService;
+
+    @GetMapping("/base/listforspu/{spuId}")
+    public R baseAttrlistforspu(@PathVariable("spuId") Long spuId){
+
+        List<ProductAttrValueEntity> entities = productAttrValueService.baseAttrlistforspu(spuId);
+        return R.ok().put("data", entities);
+    }
+
+
+
 
     @GetMapping("{attrType}/list/{catelogId}")
     public R baseAttrList(@RequestParam Map<String, Object> params,
@@ -74,6 +90,15 @@ public class AttrController {
     @RequestMapping("/update")
     public R update(@RequestBody AttrVo attr){
 		attrService.updateAttr(attr);
+
+        return R.ok();
+    }
+
+    @PostMapping("/update/{spuId}")
+    public R updateSpuAttr(@PathVariable("spuId") Long spuId,
+                           @RequestBody List<ProductAttrValueEntity> entities){
+
+        productAttrValueService.updatSpuAttr(spuId, entities);
 
         return R.ok();
     }

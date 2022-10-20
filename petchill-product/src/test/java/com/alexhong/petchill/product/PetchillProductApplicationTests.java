@@ -19,8 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Stack;
 
 @Slf4j
 @SpringBootTest
@@ -89,10 +91,49 @@ class PetchillProductApplicationTests {
         }
     }
 
+    public class TreeNode{
+        int val;
+        TreeNode left;
+        TreeNode right;
+        TreeNode(){}
+
+        TreeNode(int val){
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right){
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+
     @Test
     void test1(){
         Long[] catelogPath = categoryService.findCatelogPath(225L);
         log.info("Full path: {}", Arrays.asList(catelogPath));
+    }
+
+
+    @Test
+    void test2(){
+        TreeNode root = new TreeNode(1);
+        ArrayList<Integer> integers = new ArrayList<>();
+        Stack<TreeNode> stacks = new Stack<>();
+        stacks.push(root);
+
+        while (!stacks.empty()){
+            TreeNode pop = stacks.pop();
+            integers.add(pop.val);
+            if(pop.right != null){
+                stacks.push(pop.right);
+            }
+
+            if(pop.left != null){
+                stacks.push(pop.left);
+            }
+        }
+
     }
 
 }

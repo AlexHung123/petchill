@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,6 +15,7 @@ import com.alexhong.common.utils.Query;
 import com.alexhong.petchill.product.dao.ProductAttrValueDao;
 import com.alexhong.petchill.product.entity.ProductAttrValueEntity;
 import com.alexhong.petchill.product.service.ProductAttrValueService;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("productAttrValueService")
@@ -30,6 +33,24 @@ public class ProductAttrValueServiceImpl extends ServiceImpl<ProductAttrValueDao
 
     @Override
     public void saveProductAttr(List<ProductAttrValueEntity> collect) {
+        this.saveBatch(collect);
+    }
+
+    @Override
+    public List<ProductAttrValueEntity> baseAttrlistforspu(Long spuId) {
+        List<ProductAttrValueEntity> spuAttrlist = this.baseMapper.selectList(new QueryWrapper<ProductAttrValueEntity>().eq("spu_id", spuId));
+        return spuAttrlist;
+    }
+
+    @Transactional
+    @Override
+    public void updatSpuAttr(Long spuId, List<ProductAttrValueEntity> entities) {
+        //1. delete current properties for spuid
+        this.baseMapper.delete(new QueryWrapper<ProductAttrValueEntity>().eq("spu_id", spuId));
+        List<ProductAttrValueEntity> collect = entities.stream().map(item -> {
+            item.setSpuId(spuId);
+            return item;
+        }).collect(Collectors.toList());
         this.saveBatch(collect);
     }
 
