@@ -16,7 +16,9 @@ package com.alexhong.common.exception;
 
 public enum BizCodeEnume {
     UNKNOWN_EXCEPTION(10000, "Unknown exception error"),
-    VAILD_EXCEPTION(10001, "Parameters validation error");
+    VAILD_EXCEPTION(10001, "Parameters validation error"),
+
+    PRODUCT_UP_EXCEPTION(11000, "Product upload error");
 
     public int getCode() {
         return code;

@@ -1,4 +1,4 @@
-package com.alexhong.petchill.product.controller;
+package com.alexhong.petchill.product.app;
 
 import java.util.Arrays;
 import java.util.Map;

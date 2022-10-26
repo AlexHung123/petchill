@@ -37,5 +37,9 @@ spring:
             - Path=/api/**
           filters:
             - RewritePath=/api/(?<segment>/?.*), /renren-fast/$\{segment}
+        - id: petchill_host_route
+          uri: lb://petchill-product
+          predicates:
+            - Host=**.petchill.com
 server:
   port: 88

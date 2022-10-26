@@ -14,6 +14,11 @@ spring:
     date-format: yyyy-MM-dd HH:mm:ss
   application:
     name: petchill-product
+  thymeleaf:
+    cache: false
+  mvc:
+    static-path-pattern: /static/**
+
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:
