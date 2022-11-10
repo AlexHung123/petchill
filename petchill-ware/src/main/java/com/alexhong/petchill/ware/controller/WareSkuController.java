@@ -31,7 +31,7 @@ public class WareSkuController {
     /***
      * check if any stock for sku
      */
-    @PostMapping("/hastock")
+    @PostMapping("/hasstock")
     public R getSkusHasStock(@RequestBody List<Long> skuIds){
         List<SkuHasStockVo> skus = wareSkuService.getSkuHasStock(skuIds);
         return R.ok().setData(skus);

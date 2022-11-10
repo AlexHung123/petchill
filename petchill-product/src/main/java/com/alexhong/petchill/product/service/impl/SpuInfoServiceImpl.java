@@ -223,7 +223,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     }
 
     @Override
-    public PageUtils up(Long spuId) {
+    public void up(Long spuId) {
 
         //1. get all related sku by spuId
         List<SkuInfoEntity> skus = skuInfoService.getSkusBySpuId(spuId);
@@ -291,8 +291,6 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         }else {
             //TODO 7. Retry mechanism? invoke repeatly?
         }
-
-        return null;
     }
 
 }

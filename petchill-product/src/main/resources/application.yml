@@ -16,8 +16,18 @@ spring:
     name: petchill-product
   thymeleaf:
     cache: false
-  mvc:
-    static-path-pattern: /static/**
+  redis:
+    host: 192.168.1.120
+    port: 6379
+  cache:
+    type: redis
+    redis:
+      time-to-live: 360000
+      use-key-prefix: true
+      cache-null-values: true
+
+#  mvc:
+#    static-path-pattern: /static/**
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
@@ -28,4 +38,5 @@ mybatis-plus:
       logic-not-delete-value: 0
 logging:
   level:
-    com.alexhong.petchill: debug
+    com.alexhong.petchill: error
+

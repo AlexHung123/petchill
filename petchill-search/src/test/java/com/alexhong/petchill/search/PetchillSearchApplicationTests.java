@@ -2,11 +2,12 @@ package com.alexhong.petchill.search;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.aggregations.*;
-import co.elastic.clients.elasticsearch.core.CreateResponse;
-import co.elastic.clients.elasticsearch.core.GetResponse;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
-import co.elastic.clients.elasticsearch.core.UpdateResponse;
+import co.elastic.clients.elasticsearch._types.query_dsl.Query;
+import co.elastic.clients.elasticsearch.core.*;
+import co.elastic.clients.elasticsearch.core.search.SourceConfigBuilders;
 import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
+import co.elastic.clients.elasticsearch.transform.Source;
+import co.elastic.clients.util.ObjectBuilder;
 import lombok.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @SpringBootTest
 public class PetchillSearchApplicationTests {
@@ -26,26 +28,43 @@ public class PetchillSearchApplicationTests {
 
 	@Test
 	void searchData() throws IOException {
-		SearchResponse<bank> newbank = elasticsearchClient.search(s -> s
-						.index("newbank")
-						.aggregations("ageAgg", a->a
-								.terms(m->m
-										.field("age")
-										.size(10)
-								)
-						).aggregations("avgAgg", a->a
-								.avg(m->m
-										.field("age")
-								)
-						).aggregations("balanceAgg", a->a
-								.avg(m->m
-										.field("balance")
-								)
+
+		SearchRequest.Builder builder = new SearchRequest.Builder();
+
+		Query.Builder builder1 = new Query.Builder();
+		Query build = builder1.
+				match(m -> m.field("address").query("mill"))
+				.build();
+
+		builder.index("newbank")
+				.aggregations("ageAgg", a->a
+						.terms(m->m
+								.field("age")
+								.size(10)
 						)
-						.query(q->q
-								.match(m->m.field("address").query("mill"))
+				).aggregations("avgAgg", a->a
+						.avg(m->m
+								.field("age")
 						)
-					.size(10),
+				).aggregations("balanceAgg", a->a
+						.avg(m->m
+								.field("balance")
+						)
+				);
+//				.query(q->q
+//						.match(m->m.field("address").query("mill"))
+//				)
+//				.size(10);
+
+        builder.query(build);
+
+
+		SearchRequest build1 = builder.build();
+//		System.out.println(build1.source().toString());
+//		System.out.println(build1._DESERIALIZER);
+
+
+		SearchResponse<bank> newbank = elasticsearchClient.search(build1,
 				bank.class);
 		System.out.println(newbank.took());
 		System.out.println(newbank.hits().total().value());

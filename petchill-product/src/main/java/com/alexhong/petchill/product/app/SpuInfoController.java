@@ -38,7 +38,7 @@ public class SpuInfoController {
     @RequestMapping("/{spuId}/up")
     public R spuUp(@PathVariable("spuId") Long spuId){
 
-        PageUtils page = spuInfoService.up(spuId);
+        spuInfoService.up(spuId);
         return R.ok();
     }
 

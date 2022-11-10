@@ -23,7 +23,7 @@ public class PetchillElasticSearchConfig {
     @Bean
     public ElasticsearchClient esRestClient(){
         RestClient restClient = RestClient.builder(
-                new HttpHost("192.168.1.101", 9200)).build();
+                new HttpHost("192.168.1.120", 9200)).build();
         ElasticsearchTransport transport = new RestClientTransport(
                 restClient, new JacksonJsonpMapper());
         return new ElasticsearchClient(transport);
