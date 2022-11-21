@@ -40,10 +40,14 @@ spring:
         - id: petchill_host_route
           uri: lb://petchill-product
           predicates:
-            - Host=petchill.com
+            - Host=petchill.com,item.petchill.com
         - id: petchill_search_route
           uri: lb://petchill-search
           predicates:
             - Host=search.petchill.com
+        - id: petchill_auth_route
+          uri: lb://petchill-auth-server
+          predicates:
+            - Host=auth.petchill.com
 server:
   port: 88

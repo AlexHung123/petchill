@@ -1,8 +1,13 @@
 package com.alexhong.petchill.product;
 
+import com.alexhong.petchill.product.dao.AttrGroupDao;
+import com.alexhong.petchill.product.dao.SkuSaleAttrValueDao;
 import com.alexhong.petchill.product.entity.BrandEntity;
 import com.alexhong.petchill.product.service.BrandService;
 import com.alexhong.petchill.product.service.CategoryService;
+import com.alexhong.petchill.product.vo.SkuItemSaleAttrVo;
+import com.alexhong.petchill.product.vo.SkuItemVo;
+import com.alexhong.petchill.product.vo.SpuItemAttrGroupVo;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.gson.Gson;
 import com.qiniu.common.QiniuException;
@@ -22,6 +27,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
 import java.io.*;
+import java.sql.SQLOutput;
 import java.util.*;
 
 @Slf4j
@@ -39,6 +45,22 @@ class PetchillProductApplicationTests {
 
     @Autowired
     RedissonClient redissonClient;
+
+    @Autowired
+    AttrGroupDao attrGroupDao;
+
+    @Autowired
+    SkuSaleAttrValueDao skuSaleAttrValueDao;
+
+    @Test
+    public void test123(){
+//        List<SpuItemAttrGroupVo> attrGroupWithAttrsBySpuId = attrGroupDao.getAttrGroupWithAttrsBySpuId(13L, 225L);
+//        System.out.println(attrGroupWithAttrsBySpuId);
+
+        List<SkuItemSaleAttrVo> saleAttrsBySpuId = skuSaleAttrValueDao.getSaleAttrsBySpuId(13L);
+        System.out.println(saleAttrsBySpuId);
+
+    }
 
     @Test
     public void redisson(){

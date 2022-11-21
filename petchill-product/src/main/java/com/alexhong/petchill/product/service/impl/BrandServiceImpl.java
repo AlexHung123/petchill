@@ -4,6 +4,8 @@ import com.alexhong.petchill.product.service.CategoryBrandRelationService;
 import com.qiniu.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -50,6 +52,11 @@ public class BrandServiceImpl extends ServiceImpl<BrandDao, BrandEntity> impleme
 
             //TODO update other redundancy fields
         }
+    }
+
+    @Override
+    public List<BrandEntity> getBrandsByIds(List<Long> brandIds) {
+        return baseMapper.selectList(new QueryWrapper<BrandEntity>().in("brand_id", brandIds));
     }
 
 }

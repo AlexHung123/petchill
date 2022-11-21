@@ -3,6 +3,7 @@ package com.alexhong.petchill.search.vo;
 import com.alexhong.common.to.es.SkuEsModel;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,9 +19,20 @@ public class SearchResult {
     //records
     private Long total;
     private Integer totalPages;
+    private List<Integer> pageNavs;
     private List<BrandVo> brands;//all brands related to current search result
     private List<CatalogVo> catalogs;
     private List<AttrVo> attrs;
+
+    private List<NavVo> navs = new ArrayList<>();
+    private List<Long> attrIds = new ArrayList<>();
+
+    @Data
+    public static class NavVo{
+        private String navName;
+        private String navValue;
+        private String link;
+    }
 
 
     @Data

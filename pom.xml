@@ -20,5 +20,6 @@
         <module>petchill-gateway</module>
         <module>petchill-search</module>
         <module>petchill-third-party</module>
+        <module>petchill-auth-server</module>
     </modules>
 </project>

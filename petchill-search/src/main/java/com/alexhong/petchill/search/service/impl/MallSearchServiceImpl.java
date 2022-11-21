@@ -11,16 +11,24 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import co.elastic.clients.elasticsearch.core.search.HitsMetadata;
 import co.elastic.clients.json.JsonData;
 import com.alexhong.common.to.es.SkuEsModel;
+import com.alexhong.common.utils.R;
 import com.alexhong.petchill.search.constant.EsConstant;
+import com.alexhong.petchill.search.feign.ProductFeignService;
 import com.alexhong.petchill.search.service.MallSearchService;
+import com.alexhong.petchill.search.vo.AttrResponseVo;
+import com.alexhong.petchill.search.vo.BrandVo;
 import com.alexhong.petchill.search.vo.SearchParam;
 import com.alexhong.petchill.search.vo.SearchResult;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +40,9 @@ public class MallSearchServiceImpl implements MallSearchService {
 
     @Autowired
     ElasticsearchClient elasticsearchClient;
+
+    @Autowired
+    ProductFeignService productFeignService;
 
     @Override
     public SearchResult search(SearchParam param) {
@@ -45,34 +56,11 @@ public class MallSearchServiceImpl implements MallSearchService {
         //2. execute search request
         try {
             SearchResponse<Object> response = elasticsearchClient.search(request, Object.class);
-            System.out.println();
             //2. convert response data format to what we need
             result = buildSearchResult(response, param);
-            System.out.println(response.took());
-            System.out.println(response.hits().total().value());
-            response.hits().hits().forEach(e -> {
-                System.out.println(e.source().toString());
-                for (Map.Entry<String, List<String>> entry : e.highlight().entrySet()) {
-                    System.out.println("Key = " + entry.getKey());
-                    entry.getValue().forEach(System.out::println);
-                }
-            });
-
-            Aggregate aggregate = response.aggregations().get("brand_agg");
-            LongTermsAggregate lterms = aggregate.lterms();
-            Buckets<LongTermsBucket> buckets = lterms.buckets();
-            for (LongTermsBucket b : buckets.array()) {
-                System.out.println(b.key() + " : " + b.docCount());
-            }
-
-            System.out.println(response);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
-       
-        
-
-
         return result;
     }
 
@@ -84,12 +72,18 @@ public class MallSearchServiceImpl implements MallSearchService {
         List<SkuEsModel> esModels = new ArrayList<>();
         if(hits.hits()!=null && hits.hits().size() > 0){
             for (Hit<Object> hit : hits.hits()) {
-                String sourceAsString = hit.source().toString();
-                SkuEsModel sku = new SkuEsModel();
-                SkuEsModel esModel = JSON.parseObject(sourceAsString, SkuEsModel.class);
+                Object source = hit.source();
+                SkuEsModel esModel = JSON.parseObject(JSON.toJSONString(source), SkuEsModel.class);
+                if(!StringUtils.isEmpty(param.getKeyword())){
+                    List<String> skuTitle = hit.highlight().get("skuTitle");
+                    String s = skuTitle.get(0);
+                    esModel.setSkuTitle(s);
+                }
                 esModels.add(esModel);
             }
         }
+        result.setProduct(esModels);
+
         //2. all related attributes info
         List<SearchResult.AttrVo> attrVos = new ArrayList<>();
         NestedAggregate attr_agg = response.aggregations().get("attr_agg").nested();
@@ -114,6 +108,7 @@ public class MallSearchServiceImpl implements MallSearchService {
             attrVo.setAttrValue(attrValues);
             attrVos.add(attrVo);
         }
+        result.setAttrs(attrVos);
 
 
         //3. all related brands
@@ -135,6 +130,7 @@ public class MallSearchServiceImpl implements MallSearchService {
             brandVo.setBrandName(brand_name);
             brandVos.add(brandVo);
         }
+        result.setBrands(brandVos);
 
         //4. all related categories
         LongTermsAggregate catalog_agg = response.aggregations().get("catalog_agg").lterms();
@@ -152,6 +148,7 @@ public class MallSearchServiceImpl implements MallSearchService {
             catalogVo.setCatalogName(catalog_name);
             catalogVos.add(catalogVo);
         }
+        result.setCatalogs(catalogVos);
 
         //5. pageNum
         result.setPageNum(param.getPageNum());
@@ -163,7 +160,74 @@ public class MallSearchServiceImpl implements MallSearchService {
         //7. all pages
         int totalPages = (int) (total % EsConstant.PRODUCT_PAGESIZE == 0 ? total/EsConstant.PRODUCT_PAGESIZE : (total/EsConstant.PRODUCT_PAGESIZE + 1));
         result.setTotalPages(totalPages);
+
+        List<Integer> pageNavs = new ArrayList<>();
+        for (int i = 1; i <= totalPages; i++) {
+            pageNavs.add(i);
+        }
+
+        result.setPageNavs(pageNavs);
+
+        if(param.getAttrs() != null && param.getAttrs().size() >0){
+            List<SearchResult.NavVo> collect = param.getAttrs().stream().map(attr -> {
+                SearchResult.NavVo navVo = new SearchResult.NavVo();
+                String[] s = attr.split("_");
+                navVo.setNavValue(s[1]);
+                R r = productFeignService.attrInfo(Long.parseLong(s[0]));
+                result.getAttrIds().add(Long.parseLong(s[0]));
+                if (r.getCode() == 0) {
+                    AttrResponseVo data = r.getData("attr", new TypeReference<AttrResponseVo>() {
+                    });
+                    navVo.setNavName(data.getAttrName());
+                } else {
+                    navVo.setNavName(s[0]);
+                }
+
+                String replace = replaceQureyString(param, attr, "attrs");
+                navVo.setLink("http://search.petchill.com/list.html?" + replace);
+                return navVo;
+            }).collect(Collectors.toList());
+
+
+
+            result.setNavs(collect);
+        }
+
+        if(param.getBrandId()!=null && param.getBrandId().size() >0){
+            List<SearchResult.NavVo> navs = result.getNavs();
+            SearchResult.NavVo navVo = new SearchResult.NavVo();
+
+            navVo.setNavName("Brand");
+            R r = productFeignService.brandsInfo(param.getBrandId());
+            if(r.getCode() ==0){
+                List<BrandVo> brand = r.getData("brand", new TypeReference<List<BrandVo>>() {
+                });
+
+                StringBuffer stringBuffer = new StringBuffer();
+                String replace = "";
+                for (BrandVo brandVo : brand) {
+                    stringBuffer.append(brandVo.getName()+";");
+                    replace = replaceQureyString(param, brandVo.getBrandId() + "", "brandId");
+                }
+                navVo.setNavValue(stringBuffer.toString());
+                navVo.setLink("http://search.petchill.com/list.html?" + replace);
+            }
+            navs.add(navVo);
+        }
         return result;
+    }
+
+    private static String replaceQureyString(SearchParam param, String attr, String key) {
+        String encode = null;
+        try {
+            encode = URLEncoder.encode(attr, "UTF-8");
+            //browser handle the encoding diff from java lib
+            encode = encode.replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        String replace = param.get_queryString().replace("&" + key +"=" + encode, "");
+        return replace;
     }
 
     /***
@@ -227,9 +291,11 @@ public class MallSearchServiceImpl implements MallSearchService {
             }
         }
         //1.2 bool - filter - hasstock
-        boolQuery.filter(f->f
-                .term(t->t.field("hasStock")
-                        .value(param.getHasStock() == 1)));
+        if(param.getHasStock() != null){
+            boolQuery.filter(f->f
+                    .term(t->t.field("hasStock")
+                            .value(param.getHasStock() == 1)));
+        }
         //1.2 bool - filter - by price
         if(!StringUtils.isEmpty(param.getSkuPrice())){
             RangeQuery.Builder rangeQuery = new RangeQuery.Builder().field("skuPrice");

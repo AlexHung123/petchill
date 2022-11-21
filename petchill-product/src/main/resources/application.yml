@@ -6,6 +6,7 @@ spring:
     url: jdbc:mysql://localhost:3306/petchill_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: root
+
   cloud:
     nacos:
       discovery:
@@ -39,4 +40,12 @@ mybatis-plus:
 logging:
   level:
     com.alexhong.petchill: error
+
+petchill:
+  thread:
+    core-size: 20
+    max-size: 200
+    keep-alive-time: 10
+
+
 

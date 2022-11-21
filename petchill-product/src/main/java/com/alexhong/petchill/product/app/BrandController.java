@@ -1,6 +1,7 @@
 package com.alexhong.petchill.product.app;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.alexhong.common.valid.AddGroup;
@@ -52,6 +53,12 @@ public class BrandController {
 		BrandEntity brand = brandService.getById(brandId);
 
         return R.ok().put("brand", brand);
+    }
+
+    @RequestMapping("/infos")
+    public R info(@RequestParam("brandIds") List<Long> brandIds){
+        List<BrandEntity> brands = brandService.getBrandsByIds(brandIds);
+        return R.ok().put("brand", brands);
     }
 
     /**

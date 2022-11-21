@@ -3,6 +3,8 @@ package com.alexhong.petchill.product.service.impl;
 import com.alexhong.petchill.product.entity.AttrEntity;
 import com.alexhong.petchill.product.service.AttrService;
 import com.alexhong.petchill.product.vo.AttrGroupWithAttrsVo;
+import com.alexhong.petchill.product.vo.SkuItemVo;
+import com.alexhong.petchill.product.vo.SpuItemAttrGroupVo;
 import com.qiniu.util.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,6 @@ import com.alexhong.common.utils.Query;
 import com.alexhong.petchill.product.dao.AttrGroupDao;
 import com.alexhong.petchill.product.entity.AttrGroupEntity;
 import com.alexhong.petchill.product.service.AttrGroupService;
-import org.w3c.dom.Attr;
 
 
 @Service("attrGroupService")
@@ -75,6 +76,15 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             return attrGroupWithAttrsVo;
         }).collect(Collectors.toList());
         return collect;
+    }
+
+    @Override
+    public List<SpuItemAttrGroupVo> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId) {
+        // current spu all attributes
+        AttrGroupDao baseMapper = this.getBaseMapper();
+        List<SpuItemAttrGroupVo> vos = baseMapper.getAttrGroupWithAttrsBySpuId(spuId, catalogId);
+
+        return vos;
     }
 
 }
