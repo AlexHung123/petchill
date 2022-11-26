@@ -21,5 +21,8 @@
         <module>petchill-search</module>
         <module>petchill-third-party</module>
         <module>petchill-auth-server</module>
+        <module>petchill-test-sso-client</module>
+        <module>petchill-test-sso-server</module>
+        <module>petchill-test-sso-client2</module>
     </modules>
 </project>

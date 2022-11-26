@@ -1,13 +1,14 @@
-package com.alexhong.petchill.auth.vo;
+package com.alexhong.common.vo;
 
 import lombok.Data;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @ToString
 @Data
-public class MemberRespVo {
+public class MemberRespVo implements Serializable {
     /**
      * id
      */

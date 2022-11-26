@@ -3,6 +3,7 @@ package com.alexhong.petchill.auth.controller;
 import com.alexhong.common.constant.AuthServerConstant;
 import com.alexhong.common.exception.BizCodeEnume;
 import com.alexhong.common.utils.R;
+import com.alexhong.common.vo.MemberRespVo;
 import com.alexhong.petchill.auth.feign.MemberFeignService;
 import com.alexhong.petchill.auth.feign.ThirdPartyFeignService;
 import com.alexhong.petchill.auth.vo.UserLoginVo;
@@ -17,6 +18,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
@@ -99,11 +101,25 @@ public class LoginController {
         }
     }
 
+    @GetMapping("/login.html")
+    public String loginPage(HttpSession session){
+        Object attribute = session.getAttribute(AuthServerConstant.LOGIN_USER);
+        if(attribute==null){
+            return "login";
+        }else {
+            return "redirect:http://petchill.com";
+        }
+    }
+
     @PostMapping("/login")
-    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes){
+    public String login(UserLoginVo vo, RedirectAttributes redirectAttributes, HttpSession session){
 
         R login = memberFeignService.login(vo);
         if(login.getCode() == 0){
+            MemberRespVo data = login.getData("data", new TypeReference<MemberRespVo>() {
+            });
+            //update to session
+            session.setAttribute(AuthServerConstant.LOGIN_USER,data);
             return "redirect:http://petchill.com";
         }else {
             Map<String, String> errors = new HashMap<>();

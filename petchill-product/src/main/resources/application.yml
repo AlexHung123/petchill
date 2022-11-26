@@ -26,6 +26,8 @@ spring:
       time-to-live: 360000
       use-key-prefix: true
       cache-null-values: true
+  session:
+    store-type: redis
 
 #  mvc:
 #    static-path-pattern: /static/**

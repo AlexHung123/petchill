@@ -3,7 +3,7 @@ package com.alexhong.petchill.auth.controller;
 import com.alexhong.common.utils.HttpUtils;
 import com.alexhong.common.utils.R;
 import com.alexhong.petchill.auth.feign.MemberFeignService;
-import com.alexhong.petchill.auth.vo.MemberRespVo;
+import com.alexhong.common.vo.MemberRespVo;
 import com.alexhong.petchill.auth.vo.SocialUser;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +27,7 @@ public class OAuth2Controller {
     MemberFeignService memberFeignService;
 
     @GetMapping("oauth2.0/weibo/success")
-    public String weibo(@RequestParam("code") String code) throws Exception {
+    public String weibo(@RequestParam("code") String code, HttpSession session) throws Exception {
 
         Map<String, String> map = new HashMap<>();
         map.put("client_id", "");
@@ -50,6 +51,9 @@ public class OAuth2Controller {
                 MemberRespVo data = oauthlogin.getData("data", new TypeReference<MemberRespVo>() {
                 });
                 log.info("login successfully {}", data);
+                //TODO 1. session=esfsdkddd Current scope not enough, need to handle the sharing session for sub domain
+                //TODO 2. using json Serializable
+                session.setAttribute("loginUser", data);
                 return "redirect:http://petchill.com";
             }else {
                 return "redirect:http://auth.petchill.com/login.html";

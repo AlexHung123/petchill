@@ -1,15 +1,23 @@
 package com.alexhong.petchill.member.service.impl;
 
 import com.alexhong.common.utils.HttpUtils;
+import com.alexhong.common.utils.PageUtils;
+import com.alexhong.common.utils.Query;
+import com.alexhong.petchill.member.dao.MemberDao;
 import com.alexhong.petchill.member.dao.MemberLevelDao;
+import com.alexhong.petchill.member.entity.MemberEntity;
 import com.alexhong.petchill.member.entity.MemberLevelEntity;
 import com.alexhong.petchill.member.exception.PhoneExistException;
 import com.alexhong.petchill.member.exception.UsernameExistException;
+import com.alexhong.petchill.member.service.MemberService;
 import com.alexhong.petchill.member.vo.MemberLoginVo;
 import com.alexhong.petchill.member.vo.MemberRegisterVo;
 import com.alexhong.petchill.member.vo.SocialUser;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +26,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.alexhong.common.utils.PageUtils;
-import com.alexhong.common.utils.Query;
-
-import com.alexhong.petchill.member.dao.MemberDao;
-import com.alexhong.petchill.member.entity.MemberEntity;
-import com.alexhong.petchill.member.service.MemberService;
 
 
 @Service("memberService")
@@ -58,6 +57,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         checkUsernameUnique(vo.getUserName());
         memberEntity.setMobile(vo.getPhone());
         memberEntity.setUsername(vo.getUserName());
+        memberEntity.setNickname(vo.getUserName());
 
         //encrypted the password
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();

@@ -1,23 +1,21 @@
 package com.alexhong.petchill.member.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
 import com.alexhong.common.exception.BizCodeEnume;
+import com.alexhong.common.utils.PageUtils;
+import com.alexhong.common.utils.R;
+import com.alexhong.petchill.member.entity.MemberEntity;
 import com.alexhong.petchill.member.exception.PhoneExistException;
 import com.alexhong.petchill.member.exception.UsernameExistException;
 import com.alexhong.petchill.member.feign.CouponFeignService;
+import com.alexhong.petchill.member.service.MemberService;
 import com.alexhong.petchill.member.vo.MemberLoginVo;
 import com.alexhong.petchill.member.vo.MemberRegisterVo;
 import com.alexhong.petchill.member.vo.SocialUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import com.alexhong.petchill.member.entity.MemberEntity;
-import com.alexhong.petchill.member.service.MemberService;
-import com.alexhong.common.utils.PageUtils;
-import com.alexhong.common.utils.R;
+import java.util.Arrays;
+import java.util.Map;
 
 
 
@@ -63,7 +61,7 @@ public class MemberController {
     public R login(@RequestBody MemberLoginVo vo){
         MemberEntity entity = memberService.login(vo);
         if(entity!=null){
-            return R.ok();
+            return R.ok().setData(entity);
         }else {
             return R.error(BizCodeEnume.LOGINACCT_PASSWORD_INVALID_EXCEPTION.getCode(), BizCodeEnume.SMS_CODE_EXCEPTION.getMsg());
         }
